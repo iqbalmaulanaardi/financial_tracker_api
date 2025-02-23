@@ -1,0 +1,429 @@
+basePath: /api/v1
+definitions:
+  db.Finance:
+    properties:
+      amount:
+        type: number
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  handler.AuthLoginResponse:
+    properties:
+      access_token:
+        type: string
+      expiration:
+        type: integer
+      expired_at:
+        type: string
+    type: object
+  handler.AuthRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  handler.Category:
+    properties:
+      category_id:
+        type: string
+      category_name:
+        type: string
+    type: object
+  handler.DeleteCustomCategoryResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  handler.DeleteFinanceRequest:
+    properties:
+      finance_id:
+        type: string
+    type: object
+  handler.GetFinanceResponse:
+    properties:
+      current_page:
+        type: integer
+      next_page:
+        type: integer
+      result:
+        items:
+          $ref: '#/definitions/db.Finance'
+        type: array
+      total_expense:
+        type: number
+      total_income:
+        type: number
+      total_pages:
+        type: integer
+      totla_balance:
+        type: number
+    type: object
+  handler.ListUserCustomCategoriesResponse:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/handler.Category'
+        type: array
+    type: object
+  handler.LogoutRequest:
+    properties:
+      token:
+        type: string
+    type: object
+  handler.NewCustomCategoryRequest:
+    properties:
+      title:
+        type: string
+    type: object
+  handler.NewCustomCategoryResponse:
+    properties:
+      custom_category_id:
+        type: string
+    type: object
+  handler.NewFinanceRequest:
+    properties:
+      amount:
+        example: 420.69
+        type: number
+      category:
+        example: vacation
+        type: string
+      description:
+        example: my vacation ....
+        type: string
+      title:
+        example: vacation finance
+        type: string
+      type:
+        example: income or expense
+        type: string
+    type: object
+  handler.NewFinanceResponse:
+    properties:
+      finance_id:
+        type: string
+    type: object
+  handler.PatchFinanceRequest:
+    properties:
+      amount:
+        example: 420.69
+        type: number
+      category:
+        example: vacation
+        type: string
+      description:
+        example: my vacation ....
+        type: string
+      finance_id:
+        type: string
+      title:
+        example: vacation finance
+        type: string
+      type:
+        example: income or expense
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: financal tracker api.
+  title: Swagger API
+  version: "1.0"
+paths:
+  /custom/category:
+    delete:
+      description: delete user custom category
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: custom category id
+        in: query
+        name: custom_category_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.DeleteCustomCategoryResponse'
+        "400":
+          description: ""
+        "401":
+          description: ""
+        "500":
+          description: ""
+      summary: delete user custom category
+      tags:
+      - Custom Categories
+    get:
+      consumes:
+      - application/json
+      description: list user custom & default categories
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ListUserCustomCategoriesResponse'
+        "400":
+          description: ""
+        "401":
+          description: ""
+        "500":
+          description: ""
+      summary: list user custom & default categories
+      tags:
+      - Custom Categories
+  /finance:
+    delete:
+      consumes:
+      - application/json
+      description: delete user finances
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: delete finance request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/handler.DeleteFinanceRequest'
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: delete user finances
+      tags:
+      - Finance
+    get:
+      consumes:
+      - application/json
+      description: get user finances
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: get single finance using finance_id
+        in: query
+        name: finance_id
+        type: string
+      - description: search by title
+        in: query
+        name: title
+        type: string
+      - description: sort by price ascending, descending
+        in: query
+        name: sort-by-price
+        type: string
+      - description: filter by start date
+        in: query
+        name: start
+        type: string
+      - description: filter by end date
+        in: query
+        name: end
+        type: string
+      - description: amount of items in a single page
+        in: query
+        name: item
+        type: integer
+      - description: page number to return
+        in: query
+        name: page
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.GetFinanceResponse'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: get user finances
+      tags:
+      - Finance
+    patch:
+      consumes:
+      - application/json
+      description: patch user finances
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: patch finance request
+        in: body
+        name: patchRequest
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PatchFinanceRequest'
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: patch user finances
+      tags:
+      - Finance
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Login request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.AuthLoginResponse'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: Login
+      tags:
+      - Authentication
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout
+      parameters:
+      - description: Logout request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/handler.LogoutRequest'
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: Logout
+      tags:
+      - Authentication
+  /new/custom/category:
+    post:
+      consumes:
+      - application/json
+      description: new custom category
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: JSON body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.NewCustomCategoryRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.NewCustomCategoryResponse'
+        "400":
+          description: ""
+        "401":
+          description: ""
+        "500":
+          description: ""
+      summary: new custom category
+      tags:
+      - Custom Categories
+  /new/finance:
+    post:
+      consumes:
+      - application/json
+      description: new finance
+      parameters:
+      - description: Authorization header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: JSON body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.NewFinanceRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handler.NewFinanceResponse'
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: new finance
+      tags:
+      - Finance
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register
+      parameters:
+      - description: Register request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AuthRequest'
+      responses:
+        "201":
+          description: ""
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: Register
+      tags:
+      - Authentication
+swagger: "2.0"

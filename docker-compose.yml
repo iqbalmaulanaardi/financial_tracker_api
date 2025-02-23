@@ -1,0 +1,36 @@
+version: "3"
+services:
+
+  db:
+    image: postgres:15.3
+    networks: [financial_net]
+    ports: ["5432:5432"]
+    volumes:
+      - financial_api:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secure
+      - POSTGRES_DB=postgres
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SKIP_DOT_ENV=true
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secure
+      - POSTGRES_DB=postgres
+      - POSTGRES_HOST=db
+      - JWT_SECRET=1c9a3d303bb29688150b6969
+      - PORT=8080
+    networks: [financial_net]
+    ports: ["8080:8080"]
+    depends_on: [db]
+    restart: on-failure
+
+volumes:
+  financial_api: {}
+
+networks:
+  financial_net: {}
